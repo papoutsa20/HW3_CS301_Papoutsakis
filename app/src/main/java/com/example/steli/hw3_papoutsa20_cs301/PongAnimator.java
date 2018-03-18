@@ -26,6 +26,7 @@ public class PongAnimator implements Animator {
     private int padddleWidth = 25;
     private int paddleHeight = 200;
     private int paddleSize = 0;
+    private int ballWidthHeight = 25;
     private int speed;
     private Paint color = new Paint();
 
@@ -108,7 +109,7 @@ public class PongAnimator implements Animator {
             }
             this.yReverse = false;
             int x = (int) (Math.random() * canvas.getWidth());
-            canvas.drawRect(x, 0, x + 25, 25, this.color);
+            canvas.drawRect(x, 0, x + this.ballWidthHeight, this.ballWidthHeight, this.color);
             this.startOver = false;
             this.outOfBounds = false;
             this.speed = (int) (Math.random() * 25) + 5;
@@ -132,7 +133,7 @@ public class PongAnimator implements Animator {
                     this.yReverse = !this.yReverse;
                 }
 
-                canvas.drawRect(newX, newY, newX + 25, newY + 25, this.color);
+                canvas.drawRect(newX, newY, newX + this.ballWidthHeight, newY + this.ballWidthHeight, this.color);
 
             } else if (newX < 0) {
                 this.outOfBounds = true;
