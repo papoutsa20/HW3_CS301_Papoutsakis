@@ -1,12 +1,55 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-    <com.example.steli.hw3_papoutsa20_cs301.AnimationSurface
-        android:id="@+id/animationSurface"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-    </com.example.steli.hw3_papoutsa20_cs301.AnimationSurface>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="10"
+        android:orientation="vertical">
+
+        <com.example.steli.hw3_papoutsa20_cs301.AnimationSurface
+            android:id="@+id/animationSurface"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"></com.example.steli.hw3_papoutsa20_cs301.AnimationSurface>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".1"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/paddleSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:text="Paddle Size" />
+
+        <Button
+            android:id="@+id/Colors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:text="Color" />
+
+        <Button
+            android:id="@+id/newBall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:text="New Ball" />
+    </LinearLayout>
 
 </LinearLayout>
 

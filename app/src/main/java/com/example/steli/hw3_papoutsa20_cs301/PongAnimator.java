@@ -3,9 +3,9 @@ package com.example.steli.hw3_papoutsa20_cs301;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.icu.text.DateFormat;
-import android.util.Log;
 import android.view.MotionEvent;
+
+import java.util.Random;
 
 /**
  * Created by steli on 3/16/2018.
@@ -13,82 +13,130 @@ import android.view.MotionEvent;
 
 public class PongAnimator implements Animator {
 
-   /*
-   instance variables
-    */
+
+    /*
+           instance variables
+            */
     private Boolean startOver = true; // tells us whether we need to draw a new ball
+    private Boolean outOfBounds = false;
     private Boolean xReverse = false;
     private Boolean yReverse = false;
     private int xCount = 0;  // counts the number of logical clock ticks in the x direction
     private int yCount = 0;  // counts the number of logical clock ticks in the y direction
-
+    private int padddleWidth = 25;
+    private int paddleHeight = 200;
+    private int paddleSize = 0;
+    private int speed;
+    private Paint color = new Paint();
 
 
     @Override
-    public int interval() {return 50;}
+    public int interval() {
+        return 30;
+    }
 
     @Override
-    public int backgroundColor() {return Color.BLACK;}
+    public int backgroundColor() {
+        return Color.BLACK;
+    }
 
     @Override
-    public boolean doPause() {return false;}
+    public boolean doPause() {
+        return false;
+    }
 
     @Override
-    public boolean doQuit() {return false;}
+    public boolean doQuit() {
+        return false;
+    }
+
+
+    public void setPaddleHeight(int paddleHeight) {
+        this.paddleHeight = paddleHeight;
+    }
+
+    public int getPaddleSize() {
+        return paddleSize;
+    }
+
+    public void setPaddleSize(int paddleSize) {
+        this.paddleSize = paddleSize;
+    }
+
+    public void setStartOver(Boolean startOver) {
+        this.startOver = startOver;
+    }
+
+    public Boolean getOutOfBounds() {
+        return outOfBounds;
+    }
+
+    public void setColor(Paint color) {
+        this.color = color;
+    }
+
 
     @Override
     public void tick(Canvas canvas) {
         // drawing the stationary paddle
-        Paint white = new Paint();
-        white.setColor(Color.WHITE);
-        canvas.drawRect(50,350,75,650,white);
+        canvas.drawRect(50, 400, 50 + this.padddleWidth, 400 + this.paddleHeight, this.color);
 
-        if(!xReverse) this.xCount++;
+        if (!xReverse) this.xCount++;
         else this.xCount--;
-        if(!yReverse) this.yCount++;
+        if (!yReverse) this.yCount++;
         else this.yCount--;
-        Log.i("this is the xCount","" + this.xCount);
-        Log.i("this is the yCount", "" + this.yCount);
-        Log.i("this is the widthheight", canvas.getWidth() + "  " + canvas.getHeight());
 
+
+        //Log.i("this is the xCount","" + this.xCount);
+        //Log.i("this is the yCount", "" + this.yCount);
+        //Log.i("this is the widthheight", canvas.getWidth() + "  " + canvas.getHeight());
 
 
         // starting the ball at a random point from the upper wall
-        if(this.startOver)
-        {
-            this.xCount =1;
-            this.yCount=1;
-            this.xReverse=false;
-            this.yReverse=false;
-            int x = (int)(Math.random() * canvas.getWidth());
-            canvas.drawRect(x,0,x+25,25,white);
+        if (this.startOver) {
+            this.color.setColor(Color.WHITE);
+            this.xCount = 1;
+            this.yCount = 1;
+            switch ((int)(Math.random() * 2))
+            {
+                case 0:
+                    this.xReverse = true;
+                    break;
+                case 1:
+                    this.xReverse = false;
+                    break;
+            }
+            this.yReverse = false;
+            int x = (int) (Math.random() * canvas.getWidth());
+            canvas.drawRect(x, 0, x + 25, 25, this.color);
             this.startOver = false;
-            this.xCount = x/15;
+            this.outOfBounds = false;
+            this.speed = (int) (Math.random() * 25) + 5;
+            this.xCount = x / this.speed;
 
         }
 
         // now that we have started! let's play:)
-        else
-        {
-            int newX = this.xCount *15;
-            int newY = this.yCount *15;
+        else {
+            int newX = this.xCount * this.speed;
+            int newY = this.yCount * this.speed;
 
-            if(newX > canvas.getWidth())
-            {
-                this.xReverse = !this.xReverse;
+            if (newX > 0) {
+
+                if (newX > canvas.getWidth() || (newX >= 50 && newX <= 50 + this.padddleWidth)
+                        && (newY >= 400 && newY <= 400 + this.paddleHeight)) {
+                    this.xReverse = !this.xReverse;
+                }
+
+                if (newY > canvas.getHeight() || newY < 0) {
+                    this.yReverse = !this.yReverse;
+                }
+
+                canvas.drawRect(newX, newY, newX + 25, newY + 25, this.color);
+
+            } else if (newX < 0) {
+                this.outOfBounds = true;
             }
-
-            if(newY > canvas.getHeight() || newY < 0)
-            {
-                this.yReverse = !this.yReverse;
-            }
-            if(newX < 0) this.startOver = true;
-
-            canvas.drawRect(newX,newY,newX+25,newY+25,white);
-
-            //if((newX >=50 && newX <=75) && (newY >=350 && newY<=650))
-
-
 
 
         }
@@ -100,4 +148,6 @@ public class PongAnimator implements Animator {
     public void onTouch(MotionEvent event) {
 
     }
+
+
 }
