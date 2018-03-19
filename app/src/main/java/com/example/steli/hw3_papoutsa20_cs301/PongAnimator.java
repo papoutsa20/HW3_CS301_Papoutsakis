@@ -9,8 +9,8 @@ import android.view.MotionEvent;
 /**
  * An implementation of the animator interface that animates a single player pong game
  *
- * @Author Stelios Papoutsakis
- * @Version March 21 2018
+ * @author Stelios Papoutsakis
+ * @version March 21 2018
  */
 
 public class PongAnimator implements Animator {
