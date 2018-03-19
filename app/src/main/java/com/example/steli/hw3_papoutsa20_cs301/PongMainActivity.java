@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.Random;
+
 
 public class PongMainActivity extends AppCompatActivity implements View.OnClickListener {
 
