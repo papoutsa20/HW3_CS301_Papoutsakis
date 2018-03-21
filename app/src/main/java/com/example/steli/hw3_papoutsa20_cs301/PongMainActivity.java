@@ -9,6 +9,16 @@ import android.widget.Button;
 /**
  * Main activity of the Pong game and program begins
  *
+ * Enhancements:
+ * Paddle size the toggle between small and big
+ * User must press new ball button after the ball goes out of bounds to get a new ball
+ * Color button changes the color of paddle and ball and resets to white when the ball goes out of bounds
+ *
+ * Notes:
+ * Game is meant to be played in horizontal orientation
+ * Paddle doesn't move(Yet:))
+ * Enjoy
+ *
  * @author Steve Vegdahl
  * @author Andrew Nuxoll
  * @author Stelios Papoutsakis
