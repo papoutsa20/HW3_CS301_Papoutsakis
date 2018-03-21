@@ -115,7 +115,20 @@ public class PongAnimator implements Animator {
 
 
 
-   /*
+    /**
+     External Citation
+     Date: 20 March 20158
+     Problem: Didn't know how to start writing the tick method
+     Resource:
+     TestAnimator Starter code class
+     Solution: I was able to see the example and implement the logic used there into my own program
+     for example, that test code gave me the idea to have boolean reverse values. I didn't
+     have to do any additional research online
+
+     */
+
+
+    /*
    tick method is called to update the screen given a certain interval
    @return void
     */
@@ -175,7 +188,7 @@ public class PongAnimator implements Animator {
 
                 // if the ball hits the paddle or the far right wall
                 if (newX >= canvas.getWidth() || (newX >= 50 && newX <= 50 + this.padddleWidth)
-                        && (newY >= 400 && newY <= 400 + this.paddleHeight)) {
+                        && (newY >= 400 - this.ballWidthHeight && newY <= 400 + this.paddleHeight)) {
                     this.xReverse = !this.xReverse;
                 }
 
