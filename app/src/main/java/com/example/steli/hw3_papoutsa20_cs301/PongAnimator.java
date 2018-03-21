@@ -29,8 +29,17 @@ public class PongAnimator implements Animator {
     private int paddleHeight = 200; // user paddle height, defaults to small size
     private int paddleSize = 0; // indicates if the paddle is in small(0) or large (1) mode, defaults to small
     private int ballWidthHeight = 25; // height and width of the square ball
-    private int speed; // speed of the ball
+    private int xSpeed; // speed of the ball in x direction
+    private int ySpeed; // speed of the ball in y direction
     private Paint color = new Paint(); // color of ball and paddle
+
+    /*
+    Constructor that sets the default color to white
+     */
+
+    public PongAnimator() {
+        this.color.setColor(Color.WHITE);
+    }
 
 
     @Override
@@ -151,7 +160,6 @@ public class PongAnimator implements Animator {
 
         // starting the ball at a random point from the upper wall
         if (this.startOver) {
-            this.color.setColor(Color.WHITE);
             this.xCount = 1;
             this.yCount = 1;
 
@@ -171,8 +179,10 @@ public class PongAnimator implements Animator {
             canvas.drawRect(x, 0, x + this.ballWidthHeight, this.ballWidthHeight, this.color);
             this.startOver = false;
             this.outOfBounds = false;
-            this.speed = (int) (Math.random() * 25) + 5;
-            this.xCount = x / this.speed;
+            this.xSpeed = (int) (Math.random() * 25) + 5;
+            this.xCount = x / this.xSpeed;
+            this.ySpeed = (int) (Math.random() * 25) + 5;
+
 
         }
 
@@ -180,8 +190,8 @@ public class PongAnimator implements Animator {
         else {
 
             //updated positions to draw!
-            int newX = this.xCount * this.speed;
-            int newY = this.yCount * this.speed;
+            int newX = this.xCount * this.xSpeed;
+            int newY = this.yCount * this.ySpeed;
 
            // if the ball is onscreen
             if (newX > 0) {
@@ -190,11 +200,13 @@ public class PongAnimator implements Animator {
                 if (newX >= canvas.getWidth() || (newX >= 50 && newX <= 50 + this.padddleWidth)
                         && (newY >= 400 - this.ballWidthHeight && newY <= 400 + this.paddleHeight)) {
                     this.xReverse = !this.xReverse;
+
                 }
 
                 // if the ball hits the upper or lower wall
                 if (newY > canvas.getHeight() || newY < 0) {
                     this.yReverse = !this.yReverse;
+
                 }
 
                // draw the ball
