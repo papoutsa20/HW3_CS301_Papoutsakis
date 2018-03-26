@@ -31,7 +31,9 @@ public class PongAnimator implements Animator {
     private int ballWidthHeight = 25; // height and width of the square ball
     private int xSpeed; // speed of the ball in x direction
     private int ySpeed; // speed of the ball in y direction
+    private int yCordPaddle;
     private Paint color = new Paint(); // color of ball and paddle
+    private int score = 0;
 
     /*
     Constructor that sets the default color to white
@@ -39,6 +41,7 @@ public class PongAnimator implements Animator {
 
     public PongAnimator() {
         this.color.setColor(Color.WHITE);
+        this.yCordPaddle = 400;
     }
 
 
@@ -48,7 +51,7 @@ public class PongAnimator implements Animator {
     @return int that represents the time between "ticks"
      */
     public int interval() {
-        return 30;
+        return 10;
     }
 
     /*
@@ -84,17 +87,13 @@ public class PongAnimator implements Animator {
     /*
     @return 0 or 1 representing the paddle size
      */
-    public int getPaddleSize() {
-        return paddleSize;
-    }
+
 
    /*
    Set the paddle size
     @return void
     */
-    public void setPaddleSize(int paddleSize) {
-        this.paddleSize = paddleSize;
-    }
+
 
     /*
     change the value of the startOver boolean
@@ -144,7 +143,7 @@ public class PongAnimator implements Animator {
     @Override
     public void tick(Canvas canvas) {
         // drawing the stationary paddle
-        canvas.drawRect(50, 400, 50 + this.padddleWidth, 400 + this.paddleHeight, this.color);
+        canvas.drawRect(50, this.yCordPaddle, 50 + this.padddleWidth, this.yCordPaddle + this.paddleHeight, this.color);
 
         // increments the count if not reversed, otherwise decrements
         if (!xReverse) this.xCount++;
@@ -190,32 +189,48 @@ public class PongAnimator implements Animator {
         else {
 
             //updated positions to draw!
-            int newX = this.xCount * this.xSpeed;
-            int newY = this.yCount * this.ySpeed;
+            int newX = (this.xCount * this.xSpeed);
+            int newY = (this.yCount * this.ySpeed);
 
            // if the ball is onscreen
             if (newX > 0) {
 
                 // if the ball hits the paddle or the far right wall
                 if (newX >= canvas.getWidth() || (newX >= 50 && newX <= 50 + this.padddleWidth)
-                        && (newY >= 400 - this.ballWidthHeight && newY <= 400 + this.paddleHeight)) {
+                        && (newY >= this.yCordPaddle - this.ballWidthHeight &&
+                        newY <= this.yCordPaddle + this.paddleHeight)) {
                     this.xReverse = !this.xReverse;
+                    if(newX <= 50 + this.padddleWidth)
+                    {
+
+                        this.score++;
+
+                    }
 
                 }
 
                 // if the ball hits the upper or lower wall
                 if (newY > canvas.getHeight() || newY < 0) {
                     this.yReverse = !this.yReverse;
+                    //this.ySpeed*=1.1;
 
                 }
 
                // draw the ball
                 canvas.drawRect(newX, newY, newX + this.ballWidthHeight, newY + this.ballWidthHeight, this.color);
 
+                Paint score = new Paint();
+                score.setTextSize(100);
+                score.setTextAlign(Paint.Align.CENTER);
+                score.setColor(this.color.getColor());
+                canvas.drawText( this.score + "",canvas.getWidth()/2,canvas.getHeight()/2,score);
+
+
             }
             // if the ball passes the left most wall
             else if (newX < 0) {
                 this.outOfBounds = true;
+                this.score = 0;
             }
 
 
@@ -225,9 +240,10 @@ public class PongAnimator implements Animator {
     }
 
 
-    // don't care about this yet!!
+
     @Override
     public void onTouch(MotionEvent event) {
+        this.yCordPaddle = (int)event.getY();
 
     }
 

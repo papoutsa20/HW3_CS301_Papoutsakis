@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 
 /**
  * Main activity of the Pong game and program begins
@@ -27,7 +28,8 @@ import android.widget.Button;
  *
  */
 
-public class PongMainActivity extends AppCompatActivity implements View.OnClickListener {
+public class PongMainActivity extends AppCompatActivity implements
+        View.OnClickListener,SeekBar.OnSeekBarChangeListener {
 
     private PongAnimator pongA = null; // instance of Pong Animator
 
@@ -43,14 +45,17 @@ public class PongMainActivity extends AppCompatActivity implements View.OnClickL
         animationSurface.setAnimator(this.pongA);
 
         // Finding references to all the buttons
-        Button paddleSize = (Button)findViewById(R.id.paddleSize);
+        SeekBar paddleSize = (SeekBar)findViewById(R.id.seekBarPaddleSize);
         Button newBall = (Button)findViewById(R.id.newBall);
         Button color = (Button) findViewById(R.id.Colors);
 
+
+        paddleSize.setMax(200);
+
         //Setting listeners to all the buttons
-        paddleSize.setOnClickListener(this);
         newBall.setOnClickListener(this);
         color.setOnClickListener(this);
+        paddleSize.setOnSeekBarChangeListener(this);
     }
 
 
@@ -60,24 +65,10 @@ public class PongMainActivity extends AppCompatActivity implements View.OnClickL
      */
     @Override
     public void onClick(View v) {
-        // if buttons is paddleSize
-        if(v.getId() == R.id.paddleSize)
-        {
-            // alternate between respective paddle sizes
-            switch (this.pongA.getPaddleSize())
-            {
-                case 0:
-                    this.pongA.setPaddleHeight(400);
-                    this.pongA.setPaddleSize(1);
-                    break;
-                case 1:
-                    this.pongA.setPaddleHeight(200);
-                    this.pongA.setPaddleSize(0);
-                    break;
-            }
-        }
+
+
         // if button is new ball and ball is off screen
-        else if(v.getId() == R.id.newBall && this.pongA.getOutOfBounds())
+       if(v.getId() == R.id.newBall && this.pongA.getOutOfBounds())
         {
             this.pongA.setStartOver(true);
 
@@ -96,4 +87,19 @@ public class PongMainActivity extends AppCompatActivity implements View.OnClickL
         // if none of the above do nothing!!
         else{}
     }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if(seekBar.getId() == R.id.seekBarPaddleSize)
+        {
+            seekBar.setProgress(progress);
+            this.pongA.setPaddleHeight(200 + progress);
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {}
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {}
 }
