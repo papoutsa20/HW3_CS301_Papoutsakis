@@ -2,6 +2,7 @@ package com.example.steli.hw3_papoutsa20_cs301;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 
@@ -27,13 +28,15 @@ public class PongAnimator implements Animator {
     private int yCount = 0;  // counts the number of logical clock ticks in the y direction
     private int padddleWidth = 25; // user paddle width
     private int paddleHeight = 200; // user paddle height, defaults to small size
-    private int paddleSize = 0; // indicates if the paddle is in small(0) or large (1) mode, defaults to small
     private int ballWidthHeight = 25; // height and width of the square ball
     private int xSpeed; // speed of the ball in x direction
     private int ySpeed; // speed of the ball in y direction
     private int yCordPaddle;
+    private int yCordPaddleCpu = 0;
     private Paint color = new Paint(); // color of ball and paddle
     private int score = 0;
+    private int cpuScore = 0;
+    private boolean offSet = false;
 
     /*
     Constructor that sets the default color to white
@@ -142,6 +145,8 @@ public class PongAnimator implements Animator {
     */
     @Override
     public void tick(Canvas canvas) {
+        if(!this.offSet && Math.random() * 31 == 21) this.offSet = true;
+
         // drawing the stationary paddle
         canvas.drawRect(50, this.yCordPaddle, 50 + this.padddleWidth, this.yCordPaddle + this.paddleHeight, this.color);
 
@@ -181,6 +186,7 @@ public class PongAnimator implements Animator {
             this.xSpeed = (int) (Math.random() * 25) + 5;
             this.xCount = x / this.xSpeed;
             this.ySpeed = (int) (Math.random() * 25) + 5;
+            this.yCordPaddleCpu = 0;
 
 
         }
@@ -193,44 +199,57 @@ public class PongAnimator implements Animator {
             int newY = (this.yCount * this.ySpeed);
 
            // if the ball is onscreen
-            if (newX > 0) {
-
+            if (newX > 0 && newX < canvas.getWidth()) {
                 // if the ball hits the paddle or the far right wall
-                if (newX >= canvas.getWidth() || (newX >= 50 && newX <= 50 + this.padddleWidth)
+                if ((newX >= 50 && newX <= 50 + this.padddleWidth)
                         && (newY >= this.yCordPaddle - this.ballWidthHeight &&
                         newY <= this.yCordPaddle + this.paddleHeight)) {
                     this.xReverse = !this.xReverse;
-                    if(newX <= 50 + this.padddleWidth)
-                    {
+                    this.score++;
 
-                        this.score++;
 
-                    }
 
+                }
+
+                if((newX >= canvas.getWidth() - 75 && newX <= canvas.getWidth() - 25)
+                && (newY >= this.yCordPaddleCpu - this.ballWidthHeight &&
+                        newY <= this.yCordPaddleCpu + this.paddleHeight))
+                {
+                    this.xReverse = !this.xReverse;
+                    this.cpuScore++;
                 }
 
                 // if the ball hits the upper or lower wall
                 if (newY > canvas.getHeight() || newY < 0) {
                     this.yReverse = !this.yReverse;
-                    //this.ySpeed*=1.1;
+
 
                 }
 
                // draw the ball
                 canvas.drawRect(newX, newY, newX + this.ballWidthHeight, newY + this.ballWidthHeight, this.color);
 
+
+                // draws the score on the background
                 Paint score = new Paint();
                 score.setTextSize(100);
                 score.setTextAlign(Paint.Align.CENTER);
                 score.setColor(this.color.getColor());
-                canvas.drawText( this.score + "",canvas.getWidth()/2,canvas.getHeight()/2,score);
+                canvas.drawText( this.score + "",canvas.getWidth()/2 - 200,canvas.getHeight()/2,score);
+                canvas.drawText( this.cpuScore + "",canvas.getWidth()/2 + 200,canvas.getHeight()/2,score);
+
+
+                ComputerPlayer(canvas,newY);
+
 
 
             }
             // if the ball passes the left most wall
-            else if (newX < 0) {
+            else {
                 this.outOfBounds = true;
                 this.score = 0;
+                this.cpuScore = 0;
+                this.offSet = false;
             }
 
 
@@ -239,13 +258,46 @@ public class PongAnimator implements Animator {
 
     }
 
+    public void ComputerPlayer(Canvas g, int yCord)
+    {
 
+
+
+
+        if((yCord <= this.paddleHeight/2 && !this.offSet))
+        {
+            this.yCordPaddleCpu = 0;
+        }
+
+
+      else if((yCord + this.paddleHeight/2 >= g.getHeight() && !this.offSet)){
+            this.yCordPaddleCpu = g.getHeight() - this.paddleHeight;
+        }
+
+        else{
+            if(this.offSet)
+            this.yCordPaddleCpu = yCord/10 - (this.paddleHeight/2);
+            else
+            this.yCordPaddleCpu = yCord - (this.paddleHeight / 2);
+        }
+
+
+
+
+
+
+
+        g.drawRect(g.getWidth() - 50, this.yCordPaddleCpu, g.getWidth() - 25,
+                this.yCordPaddleCpu + this.paddleHeight, this.color);
+
+
+    }
 
     @Override
     public void onTouch(MotionEvent event) {
         this.yCordPaddle = (int)event.getY();
 
     }
-
+//Hi Stelly Belly
 
 }
