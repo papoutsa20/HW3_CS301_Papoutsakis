@@ -145,7 +145,7 @@ public class PongAnimator implements Animator {
     */
     @Override
     public void tick(Canvas canvas) {
-        if(!this.offSet && Math.random() * 31 == 21) this.offSet = true;
+        if(!this.offSet && (int)(Math.random() * 1000) == 21) this.offSet = true;
 
         // drawing the stationary paddle
         canvas.drawRect(50, this.yCordPaddle, 50 + this.padddleWidth, this.yCordPaddle + this.paddleHeight, this.color);
@@ -166,6 +166,8 @@ public class PongAnimator implements Animator {
         if (this.startOver) {
             this.xCount = 1;
             this.yCount = 1;
+            this.score = 0;
+            this.cpuScore = 0;
 
             // deciding which direction the ball will shoot out of
             switch ((int) (Math.random() * 2)) {
@@ -192,7 +194,7 @@ public class PongAnimator implements Animator {
         }
 
         // now that we have started! let's play:)
-        else {
+        else  {
 
             //updated positions to draw!
             int newX = (this.xCount * this.xSpeed);
@@ -211,7 +213,7 @@ public class PongAnimator implements Animator {
 
                 }
 
-                if((newX >= canvas.getWidth() - 75 && newX <= canvas.getWidth() - 25)
+                else if((newX >= canvas.getWidth() - 75 && newX <= canvas.getWidth() - 25)
                 && (newY >= this.yCordPaddleCpu - this.ballWidthHeight &&
                         newY <= this.yCordPaddleCpu + this.paddleHeight))
                 {
@@ -220,7 +222,7 @@ public class PongAnimator implements Animator {
                 }
 
                 // if the ball hits the upper or lower wall
-                if (newY > canvas.getHeight() || newY < 0) {
+                else if (newY > canvas.getHeight() || newY < 0) {
                     this.yReverse = !this.yReverse;
 
 
@@ -239,7 +241,7 @@ public class PongAnimator implements Animator {
                 canvas.drawText( this.cpuScore + "",canvas.getWidth()/2 + 200,canvas.getHeight()/2,score);
 
 
-                ComputerPlayer(canvas,newY);
+                ComputerPlayer(canvas,newY,newX);
 
 
 
@@ -247,9 +249,16 @@ public class PongAnimator implements Animator {
             // if the ball passes the left most wall
             else {
                 this.outOfBounds = true;
-                this.score = 0;
-                this.cpuScore = 0;
                 this.offSet = false;
+                canvas.drawRect(canvas.getWidth() - 50, this.yCordPaddleCpu, canvas.getWidth() - 25,
+                        this.yCordPaddleCpu + this.paddleHeight, this.color);
+                Paint score = new Paint();
+                score.setTextSize(100);
+                score.setTextAlign(Paint.Align.CENTER);
+                score.setColor(this.color.getColor());
+                canvas.drawText("Final " + this.score ,canvas.getWidth()/2 - 200,canvas.getHeight()/2,score);
+                canvas.drawText("Final " + this.cpuScore,canvas.getWidth()/2 + 200,canvas.getHeight()/2,score);
+
             }
 
 
@@ -258,27 +267,33 @@ public class PongAnimator implements Animator {
 
     }
 
-    public void ComputerPlayer(Canvas g, int yCord)
+    public void ComputerPlayer(Canvas g, int yCord, int xCord)
     {
 
 
 
 
-        if((yCord <= this.paddleHeight/2 && !this.offSet))
+        if((yCord <= this.paddleHeight/2))
         {
             this.yCordPaddleCpu = 0;
         }
 
 
-      else if((yCord + this.paddleHeight/2 >= g.getHeight() && !this.offSet)){
-            this.yCordPaddleCpu = g.getHeight() - this.paddleHeight;
+      else if((yCord + this.paddleHeight/2 >= g.getHeight())){
+
+            if(!(this.offSet && xCord > g.getWidth()-300))
+                this.yCordPaddleCpu = g.getHeight() - this.paddleHeight;
         }
 
         else{
-            if(this.offSet)
-            this.yCordPaddleCpu = yCord/10 - (this.paddleHeight/2);
-            else
-            this.yCordPaddleCpu = yCord - (this.paddleHeight / 2);
+            if(this.offSet && xCord > g.getWidth()-300)
+            {
+                if(this.yCordPaddleCpu > 0) this.yCordPaddleCpu-= 20;
+
+            }
+            else {
+                this.yCordPaddleCpu = yCord - (this.paddleHeight / 2);
+            }
         }
 
 
