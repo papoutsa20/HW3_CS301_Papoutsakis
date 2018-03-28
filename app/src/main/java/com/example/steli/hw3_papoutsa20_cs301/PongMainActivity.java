@@ -19,8 +19,10 @@ import android.widget.SeekBar;
  *
  * Notes:
  * Game is meant to be played in horizontal orientation
+ * Press new ball button when ball goes out of bounds
  * Rarely there is a glitch where the ball gets stuck on one of the paddles
  * Enjoy
+ *
  *
  * @author Steve Vegdahl
  * @author Andrew Nuxoll
