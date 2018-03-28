@@ -2,13 +2,12 @@ package com.example.steli.hw3_papoutsa20_cs301;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 
 
 /**
- * An implementation of the animator interface that animates a single player pong game
+ * An implementation of the animator interface that animates a single player pong game vs a CPU
  *
  * @author Stelios Papoutsakis
  * @version March 21 2018
@@ -31,15 +30,16 @@ public class PongAnimator implements Animator {
     private int ballWidthHeight = 25; // height and width of the square ball
     private int xSpeed; // speed of the ball in x direction
     private int ySpeed; // speed of the ball in y direction
-    private int yCordPaddle;
+    private int yCordPaddle; // y coordinate of the CPU paddle
     private int yCordPaddleCpu = 0;
     private Paint color = new Paint(); // color of ball and paddle
-    private int score = 0;
-    private int cpuScore = 0;
-    private boolean offSet = false;
+    private int score = 0; // human player score
+    private int cpuScore = 0; // cpu score
+    private boolean offSet = false; // if the cpu will attempt to miss the ball
+
 
     /*
-    Constructor that sets the default color to white
+    Constructor that sets the default color to white and cpu paddle location
      */
 
     public PongAnimator() {
@@ -87,15 +87,18 @@ public class PongAnimator implements Animator {
         this.paddleHeight = paddleHeight;
     }
 
-    /*
-    @return 0 or 1 representing the paddle size
-     */
+
+
 
 
    /*
-   Set the paddle size
+   Set the ball size
     @return void
     */
+
+    public void setBallWidthHeight(int ballWidthHeight) {this.ballWidthHeight = ballWidthHeight;}
+
+
 
 
     /*
@@ -145,6 +148,8 @@ public class PongAnimator implements Animator {
     */
     @Override
     public void tick(Canvas canvas) {
+
+       // randomly picks a num between 0 an 1000, if this is equal cpu will miss the ball
         if(!this.offSet && (int)(Math.random() * 1000) == 21) this.offSet = true;
 
         // drawing the stationary paddle
@@ -187,7 +192,7 @@ public class PongAnimator implements Animator {
             this.outOfBounds = false;
             this.xSpeed = (int) (Math.random() * 25) + 5;
             this.xCount = x / this.xSpeed;
-            this.ySpeed = (int) (Math.random() * 25) + 5;
+            this.ySpeed = (int) (Math.random() * 20) + 5;
             this.yCordPaddleCpu = 0;
 
 
@@ -213,7 +218,8 @@ public class PongAnimator implements Animator {
 
                 }
 
-                else if((newX >= canvas.getWidth() - 75 && newX <= canvas.getWidth() - 25)
+                else if((newX + this.ballWidthHeight >= canvas.getWidth() - 75
+                        && newX + this.ballWidthHeight <= canvas.getWidth() - 25)
                 && (newY >= this.yCordPaddleCpu - this.ballWidthHeight &&
                         newY <= this.yCordPaddleCpu + this.paddleHeight))
                 {
@@ -240,7 +246,7 @@ public class PongAnimator implements Animator {
                 canvas.drawText( this.score + "",canvas.getWidth()/2 - 200,canvas.getHeight()/2,score);
                 canvas.drawText( this.cpuScore + "",canvas.getWidth()/2 + 200,canvas.getHeight()/2,score);
 
-
+                // draws the cpu paddle in relation to the ball
                 ComputerPlayer(canvas,newY,newX);
 
 
@@ -256,8 +262,20 @@ public class PongAnimator implements Animator {
                 score.setTextSize(100);
                 score.setTextAlign(Paint.Align.CENTER);
                 score.setColor(this.color.getColor());
-                canvas.drawText("Final " + this.score ,canvas.getWidth()/2 - 200,canvas.getHeight()/2,score);
-                canvas.drawText("Final " + this.cpuScore,canvas.getWidth()/2 + 200,canvas.getHeight()/2,score);
+                if(this.score > this.cpuScore)
+                {
+                    canvas.drawText("Human Wins", canvas.getWidth()/2,canvas.getHeight()/2,score);
+
+                }
+                else if(this.score < this.cpuScore)
+                {
+                    canvas.drawText("Computer Wins", canvas.getWidth()/2,canvas.getHeight()/2,score);
+                }
+
+                else
+                {
+                    canvas.drawText("Tie", canvas.getWidth()/2,canvas.getHeight()/2,score);
+                }
 
             }
 
@@ -288,7 +306,7 @@ public class PongAnimator implements Animator {
         else{
             if(this.offSet && xCord > g.getWidth()-300)
             {
-                if(this.yCordPaddleCpu > 0) this.yCordPaddleCpu-= 20;
+                if(this.yCordPaddleCpu > 0) this.yCordPaddleCpu-= 30;
 
             }
             else {
@@ -313,6 +331,9 @@ public class PongAnimator implements Animator {
         this.yCordPaddle = (int)event.getY();
 
     }
+
+
+
 //Hi Stelly Belly
 
 }

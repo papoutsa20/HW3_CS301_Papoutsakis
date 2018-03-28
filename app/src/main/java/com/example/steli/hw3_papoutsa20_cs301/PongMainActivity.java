@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 
+
 /**
  * Main activity of the Pong game and program begins
  *
@@ -33,6 +34,7 @@ public class PongMainActivity extends AppCompatActivity implements
 
     private PongAnimator pongA = null; // instance of Pong Animator
 
+
     //onCreate
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,17 +48,25 @@ public class PongMainActivity extends AppCompatActivity implements
 
         // Finding references to all the buttons
         SeekBar paddleSize = (SeekBar)findViewById(R.id.seekBarPaddleSize);
+        SeekBar ballSize = (SeekBar)findViewById(R.id.seekBarBallSize);
         Button newBall = (Button)findViewById(R.id.newBall);
         Button color = (Button) findViewById(R.id.Colors);
 
 
         paddleSize.setMax(200);
+        ballSize.setMax(45);
+        ballSize.setProgress(20);
 
         //Setting listeners to all the buttons
         newBall.setOnClickListener(this);
         color.setOnClickListener(this);
         paddleSize.setOnSeekBarChangeListener(this);
+        ballSize.setOnSeekBarChangeListener(this);
+
+
+
     }
+
 
 
 
@@ -94,6 +104,12 @@ public class PongMainActivity extends AppCompatActivity implements
         {
             seekBar.setProgress(progress);
             this.pongA.setPaddleHeight(200 + progress);
+        }
+
+        else if(seekBar.getId() == R.id.seekBarBallSize)
+        {
+            seekBar.setProgress(progress);
+            this.pongA.setBallWidthHeight(5 + progress);
         }
     }
 
