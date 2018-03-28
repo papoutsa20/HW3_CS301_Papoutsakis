@@ -10,7 +10,7 @@ import android.view.MotionEvent;
  * An implementation of the animator interface that animates a single player pong game vs a CPU
  *
  * @author Stelios Papoutsakis
- * @version March 21 2018
+ * @version March 28 2018 V2.0
  */
 
 public class PongAnimator implements Animator {
@@ -30,8 +30,8 @@ public class PongAnimator implements Animator {
     private int ballWidthHeight = 25; // height and width of the square ball
     private int xSpeed; // speed of the ball in x direction
     private int ySpeed; // speed of the ball in y direction
-    private int yCordPaddle; // y coordinate of the CPU paddle
-    private int yCordPaddleCpu = 0;
+    private int yCordPaddle; // y coordinate of the human paddle
+    private int yCordPaddleCpu = 0; // y coordinate of the CPU paddle
     private Paint color = new Paint(); // color of ball and paddle
     private int score = 0; // human player score
     private int cpuScore = 0; // cpu score
@@ -96,9 +96,9 @@ public class PongAnimator implements Animator {
     @return void
     */
 
-    public void setBallWidthHeight(int ballWidthHeight) {this.ballWidthHeight = ballWidthHeight;}
-
-
+    public void setBallWidthHeight(int ballWidthHeight) {
+        this.ballWidthHeight = ballWidthHeight;
+    }
 
 
     /*
@@ -128,29 +128,28 @@ public class PongAnimator implements Animator {
     }
 
 
-
     /**
-     External Citation
-     Date: 20 March 20158
-     Problem: Didn't know how to start writing the tick method
-     Resource:
-     TestAnimator Starter code class
-     Solution: I was able to see the example and implement the logic used there into my own program
-     for example, that test code gave me the idea to have boolean reverse values. I didn't
-     have to do any additional research online
-
+     * External Citation
+     * Date: 20 March 20158
+     * Problem: Didn't know how to start writing the tick method
+     * Resource:
+     * TestAnimator Starter code class
+     * Solution: I was able to see the example and implement the logic used there into my own program
+     * for example, that test code gave me the idea to have boolean reverse values. I didn't
+     * have to do any additional research online
      */
 
 
     /*
    tick method is called to update the screen given a certain interval
+   paints the ball, human paddle and cpu paddle
    @return void
     */
     @Override
     public void tick(Canvas canvas) {
 
-       // randomly picks a num between 0 an 1000, if this is equal cpu will miss the ball
-        if(!this.offSet && (int)(Math.random() * 1000) == 21) this.offSet = true;
+        // randomly picks a num between 0 an 1000, if this is equal cpu will miss the ball
+        if (!this.offSet && (int) (Math.random() * 1000) == 21) this.offSet = true;
 
         // drawing the stationary paddle
         canvas.drawRect(50, this.yCordPaddle, 50 + this.padddleWidth, this.yCordPaddle + this.paddleHeight, this.color);
@@ -185,27 +184,32 @@ public class PongAnimator implements Animator {
             }
             this.yReverse = false;
 
-            // deciding the speed of the ball
+
+            // drawing ball
             int x = (int) (Math.random() * canvas.getWidth());
             canvas.drawRect(x, 0, x + this.ballWidthHeight, this.ballWidthHeight, this.color);
+
+
             this.startOver = false;
             this.outOfBounds = false;
+            this.yCordPaddleCpu = 0;
+
+            // deciding the speed of the ball
             this.xSpeed = (int) (Math.random() * 25) + 5;
             this.xCount = x / this.xSpeed;
             this.ySpeed = (int) (Math.random() * 20) + 5;
-            this.yCordPaddleCpu = 0;
 
 
         }
 
         // now that we have started! let's play:)
-        else  {
+        else {
 
             //updated positions to draw!
             int newX = (this.xCount * this.xSpeed);
             int newY = (this.yCount * this.ySpeed);
 
-           // if the ball is onscreen
+            // if the ball is onscreen
             if (newX > 0 && newX < canvas.getWidth()) {
                 // if the ball hits the paddle or the far right wall
                 if ((newX >= 50 && newX <= 50 + this.padddleWidth)
@@ -215,14 +219,10 @@ public class PongAnimator implements Animator {
                     this.score++;
 
 
-
-                }
-
-                else if((newX + this.ballWidthHeight >= canvas.getWidth() - 75
-                        && newX + this.ballWidthHeight <= canvas.getWidth() - 25)
-                && (newY >= this.yCordPaddleCpu - this.ballWidthHeight &&
-                        newY <= this.yCordPaddleCpu + this.paddleHeight))
-                {
+                } else if ((newX >= canvas.getWidth() - (50 + this.ballWidthHeight)
+                        && newX <= canvas.getWidth() - (50 + this.ballWidthHeight - 25)
+                        && (newY >= this.yCordPaddleCpu - this.ballWidthHeight &&
+                        newY <= this.yCordPaddleCpu + this.paddleHeight))) {
                     this.xReverse = !this.xReverse;
                     this.cpuScore++;
                 }
@@ -234,8 +234,19 @@ public class PongAnimator implements Animator {
 
                 }
 
-               // draw the ball
+                // draw the ball
                 canvas.drawRect(newX, newY, newX + this.ballWidthHeight, newY + this.ballWidthHeight, this.color);
+
+
+                /**
+                 External Citation
+                 Date: 26 March 2018
+                 Problem: Didn't know how to draw the score on a surface view
+                 Resource https://stackoverflow.com/questions/11471210/draw-text-on-surfaceview
+                 Solution: I used some of the code in here to figure out how to draw the score of the game
+                 on the actual surface view
+
+                 */
 
 
                 // draws the score on the background
@@ -243,16 +254,15 @@ public class PongAnimator implements Animator {
                 score.setTextSize(100);
                 score.setTextAlign(Paint.Align.CENTER);
                 score.setColor(this.color.getColor());
-                canvas.drawText( this.score + "",canvas.getWidth()/2 - 200,canvas.getHeight()/2,score);
-                canvas.drawText( this.cpuScore + "",canvas.getWidth()/2 + 200,canvas.getHeight()/2,score);
+                canvas.drawText(this.score + "", canvas.getWidth() / 2 - 200, canvas.getHeight() / 2, score);
+                canvas.drawText(this.cpuScore + "", canvas.getWidth() / 2 + 200, canvas.getHeight() / 2, score);
 
                 // draws the cpu paddle in relation to the ball
-                ComputerPlayer(canvas,newY,newX);
-
+                ComputerPlayer(canvas, newY, newX);
 
 
             }
-            // if the ball passes the left most wall
+            // if the ball goes out of bounds
             else {
                 this.outOfBounds = true;
                 this.offSet = false;
@@ -262,19 +272,16 @@ public class PongAnimator implements Animator {
                 score.setTextSize(100);
                 score.setTextAlign(Paint.Align.CENTER);
                 score.setColor(this.color.getColor());
-                if(this.score > this.cpuScore)
-                {
-                    canvas.drawText("Human Wins", canvas.getWidth()/2,canvas.getHeight()/2,score);
 
-                }
-                else if(this.score < this.cpuScore)
-                {
-                    canvas.drawText("Computer Wins", canvas.getWidth()/2,canvas.getHeight()/2,score);
-                }
 
-                else
-                {
-                    canvas.drawText("Tie", canvas.getWidth()/2,canvas.getHeight()/2,score);
+                // decides who is the winner
+                if (this.score > this.cpuScore) {
+                    canvas.drawText("Human Wins", canvas.getWidth() / 2, canvas.getHeight() / 2, score);
+
+                } else if (this.score < this.cpuScore) {
+                    canvas.drawText("Computer Wins", canvas.getWidth() / 2, canvas.getHeight() / 2, score);
+                } else {
+                    canvas.drawText("Tie", canvas.getWidth() / 2, canvas.getHeight() / 2, score);
                 }
 
             }
@@ -285,39 +292,40 @@ public class PongAnimator implements Animator {
 
     }
 
-    public void ComputerPlayer(Canvas g, int yCord, int xCord)
-    {
+
+    /*
+       method that draws the cpu paddle based on ball y and x position
+       @param Canvas, int yCord, xCord
+       @return void
+        */
+    public void ComputerPlayer(Canvas g, int yCord, int xCord) {
 
 
-
-
-        if((yCord <= this.paddleHeight/2))
-        {
+        // if ball is near the top of the screen, draw the paddle at Y cord 0
+        if ((yCord <= this.paddleHeight / 2)) {
             this.yCordPaddleCpu = 0;
         }
 
 
-      else if((yCord + this.paddleHeight/2 >= g.getHeight())){
+        // if ball is near the bottom, draw paddle at Y cord Canvas Height - paddle height
+        else if ((yCord + this.paddleHeight / 2 >= g.getHeight())) {
 
-            if(!(this.offSet && xCord > g.getWidth()-300))
+            if (!(this.offSet && xCord > g.getWidth() - 300))
                 this.yCordPaddleCpu = g.getHeight() - this.paddleHeight;
-        }
+        } else {
 
-        else{
-            if(this.offSet && xCord > g.getWidth()-300)
-            {
-                if(this.yCordPaddleCpu > 0) this.yCordPaddleCpu-= 30;
+            // if offset, have paddle move up quickly
+            if (this.offSet && xCord > g.getWidth() - 300) {
+                if (this.yCordPaddleCpu > 0) this.yCordPaddleCpu -= 30;
 
             }
+
+
+            // otherwise draw the paddle tto be in line with the ball
             else {
                 this.yCordPaddleCpu = yCord - (this.paddleHeight / 2);
             }
         }
-
-
-
-
-
 
 
         g.drawRect(g.getWidth() - 50, this.yCordPaddleCpu, g.getWidth() - 25,
@@ -327,13 +335,18 @@ public class PongAnimator implements Animator {
     }
 
     @Override
+    /*
+    Ontouch method draws human paddle where player presses.
+    X Cord is ignored on purpose so th user has the option to press anywhere on screen to increase view of the paddle
+    rather than to try to press between the paddle width
+
+     */
     public void onTouch(MotionEvent event) {
-        this.yCordPaddle = (int)event.getY();
+            this.yCordPaddle = (int) event.getY();
 
     }
 
 
 
-//Hi Stelly Belly
 
 }
